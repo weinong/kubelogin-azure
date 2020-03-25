@@ -41,7 +41,7 @@ jobs:
     - name: Zip
       uses: montudor/action-zip@v0.1.0
       with:
-        args: zip -qq -r kubectl-aad-login.zip bin
+        args: zip -qq -r kubelogin-azure.zip bin
     
     - name: Publish
       uses: skx/github-action-publish-binaries@master
