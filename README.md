@@ -9,6 +9,7 @@ This is a [client-go credential (exec) plugin](https://kubernetes.io/docs/refere
 * non-interactive service principal login
 * non-interactive user principal login using [Resource owner login flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc) 
 * AAD token will be cached locally for renewal. By default, it is saved in `~/.kube/cache/kubelogin-azure/azure.json`
+* addresses https://github.com/kubernetes/kubernetes/issues/86410 to remove `spn:` prefix in `audience` claim, if necessary. (based on kubeconfig or commandline argument `--legacy`)
 
 ## Getting Started
 
@@ -20,8 +21,6 @@ Copy the latest [Releases](https://github.com/weinong/kubelogin-azure/releases) 
 
 #### Device code flow (interactive)
 
-It's similar to current kubectl implementation except that the resulting AAD token will have proper `audience` claim with "spn:" prefix. It addresses https://github.com/kubernetes/kubernetes/issues/86410
-
 ```sh
 export KUBECONFIG=/path/to/kubeconfig
 
@@ -30,7 +29,7 @@ kubelogin-azure convert-kubeconfig
 kubectl get no
 ```
 
-To be compatible with AKS AADv1, add `--legacy` to `convert-kubeconfig` command
+If you are using kubeconfig from AKS AADv1 clusters, `convert-kubeconfig` command will automatically add `--legacy` flag so that `audience` claim will have `spn:` prefix.
 
 #### Service principal login flow (non interactive)
 
