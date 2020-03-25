@@ -8,12 +8,13 @@ This is a [client-go credential (exec) plugin](https://kubernetes.io/docs/refere
 * device code login
 * non-interactive service principal login
 * non-interactive user principal login using [Resource owner login flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc) 
+* AAD token will be cached locally for renewal. By default, it is saved in `~/.kube/cache/kubelogin-azure/azure.json`
 
 ## Getting Started
 
 ### Setup
 
-Copy the latest binary to shell's search path.
+Copy the latest [Releases](https://github.com/weinong/kubelogin-azure/releases) to shell's search path.
 
 ### Run
 
@@ -50,7 +51,7 @@ kubectl get no
 
 > Note: ROPC is not supported in hybrid identity federation scenarios (for example, Azure AD and ADFS used to authenticate on-premises accounts). If users are full-page redirected to an on-premises identity providers, Azure AD is not able to test the username and password against that identity provider. Pass-through authentication is supported with ROPC, however.
 > It also does not work when MFA policy is enabled
-> Personal accounts that are invited to an Azure AD tenant can't use ROPC.
+> Personal accounts that are invited to an Azure AD tenant can't use ROPC
 
 ```sh
 export KUBECONFIG=/path/to/kubeconfig
@@ -61,4 +62,12 @@ export AAD_USER_PRINCIPAL_NAME=foo@bar.com
 export AAD_USER_PRINCIPAL_PASSWORD=<password>
 
 kubectl get no
+```
+
+### Clean up
+
+Whenever you want to remove the cached token, to change login method, or to change tenant, you should remove the cached token
+
+```sh
+kubelogin-azure remove-token
 ```

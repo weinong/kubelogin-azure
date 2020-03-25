@@ -8,7 +8,7 @@ endif
 
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 GIT_HASH   := $(shell git rev-parse --verify HEAD)
-GIT_TAG    := $(shell git describe --exact-match --abbrev=0 2>/dev/null || echo "")
+GIT_TAG    := $(shell git describe --tags --exact-match --abbrev=0 2>/dev/null || echo "")
 BUILD_TIME ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 ifdef GIT_TAG
