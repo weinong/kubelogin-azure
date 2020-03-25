@@ -9,7 +9,6 @@ import (
 )
 
 const (
-	cacheFile                     = "azure.json"
 	expirationDelta time.Duration = 60 * time.Second
 )
 
@@ -19,7 +18,6 @@ type ExecCredentialPlugin interface {
 
 type execCredentialPlugin struct {
 	o                    *Options
-	cacheFile            string
 	tokenCache           TokenCache
 	execCredentialWriter ExecCredentialWriter
 	provider             TokenProvider
@@ -33,7 +31,6 @@ func New(o *Options) (ExecCredentialPlugin, error) {
 	}
 	return &execCredentialPlugin{
 		o:                    o,
-		cacheFile:            o.TokenCacheFile,
 		tokenCache:           &defaultTokenCache{},
 		execCredentialWriter: &execCredentialWriter{},
 		provider:             provider,
@@ -43,9 +40,9 @@ func New(o *Options) (ExecCredentialPlugin, error) {
 
 func (p *execCredentialPlugin) Do() error {
 	// get token from cache
-	token, err := p.tokenCache.Read(p.cacheFile)
+	token, err := p.tokenCache.Read(p.o.TokenCacheFile)
 	if err != nil {
-		return fmt.Errorf("unable to read from token cache: %s, err: %s", p.cacheFile, err)
+		return fmt.Errorf("unable to read from token cache: %s, err: %s", p.o.TokenCacheFile, err)
 	}
 
 	// verify resource
@@ -81,7 +78,7 @@ func (p *execCredentialPlugin) Do() error {
 				klog.V(10).Info("token refreshed")
 
 				// if refresh succeeds, save tooken, and return
-				if err := p.tokenCache.Write(p.cacheFile, token); err != nil {
+				if err := p.tokenCache.Write(p.o.TokenCacheFile, token); err != nil {
 					return fmt.Errorf("failed to write to store: %s", err)
 				}
 
@@ -100,8 +97,8 @@ func (p *execCredentialPlugin) Do() error {
 	}
 
 	// save token
-	if err := p.tokenCache.Write(p.cacheFile, token); err != nil {
-		return fmt.Errorf("unable to write to token cache: %s, err: %s", p.cacheFile, err)
+	if err := p.tokenCache.Write(p.o.TokenCacheFile, token); err != nil {
+		return fmt.Errorf("unable to write to token cache: %s, err: %s", p.o.TokenCacheFile, err)
 	}
 
 	return p.execCredentialWriter.Write(token)
